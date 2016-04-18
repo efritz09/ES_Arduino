@@ -27,6 +27,8 @@
 #include "ES_Framework.h"
 #include "TemplateFSM.h"
 
+#include <Arduino.h>
+
 /*----------------------------- Module Defines ----------------------------*/
 
 /*---------------------------- Module Functions ---------------------------*/
@@ -74,7 +76,7 @@ bool InitTemplateFSM ( uint8_t Priority )
   // put us into the Initial PseudoState
   CurrentState = Start;
   // post the initial transition event
-  printf("main code initialized");
+  Serial.println("main code initialized");
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService( MyPriority, ThisEvent) == true)
   {
@@ -141,62 +143,72 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
   else if (NewEvent == ES_BRIGHT) LightSensorState = false;
   else if (NewEvent == ES_MOVING) AccelState = true;
   else if (NewEvent == ES_NOTMOVING) AccelState = false;
-  else if (NewEvent == ES_WRONG) printf("Something is wrong\n");
-
+  Serial.print("Connection: ");
+  Serial.println(Connection);
+  Serial.print("Mode: ");
+  Serial.println(Mode);
+  Serial.print("State: ");
+  Serial.println(State);
+  Serial.print("Light Sensor: ");
+  Serial.println(LightSensorState);
+  Serial.print("Accelerometer: ");
+  Serial.println(AccelState);
+//  else if (NewEvent == ES_WRONG) printf("Something is wrong\n");
+// (Connection && !Mode && (!State || LightSensorState))
   switch ( CurrentState )
   {
       case Start :       // If current state is initial Psedudo State
-//           if (Connection == true && Mode == true && (State == false || LightSensorState == true)) || (Connection == false && AccelState == true) {
-//            CurrentState = Blinking; 
-//            printf("Blinking State\n");
-//           }
-
-           if (Connection == true && Mode == false && (State == false || LightSensorState == true)){
-            CurrentState = Solid;
-            printf("Solid State\n");
+           if (Connection && Mode && (!State || LightSensorState) || (!Connection && AccelState)) {
+            CurrentState = Blinking; 
+            Serial.println("Blinking State");
            }
 
-           if ((Connection == false && AccelState == false) || (Connection == true && LightSensorState == false)) {
+           if (Connection && !Mode && (!State || LightSensorState)){
+            CurrentState = Solid;
+            Serial.println("Solid State");
+           }
+
+           if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
             CurrentState = LEDOff;
-            printf("LEDOff State\n");
+            Serial.println("LEDOff state");
            }
            break;
 
       case Blinking :       // If current state is state one
-           if (Connection == true && Mode == false && (State == false || LightSensorState == true)){
+           if (Connection && !Mode && (!State || LightSensorState)){
             CurrentState = Solid;
-            printf("Solid State\n");
+            Serial.println("Solid State");
            }
 
-            if ((Connection == false && AccelState == false) || (Connection == true && LightSensorState == false)) {
+           if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
             CurrentState = LEDOff;
-            printf("LED Off State\n");
+            Serial.println("LED Off State");
            }
           break;
       // repeat state pattern as required for other states
       
       case Solid :     
-//           if (Connection == true && Mode == true && (State == false || LightSensorState == true)) || (Connection == false && AccelState == true) {
-//            CurrentState = Blinking; 
-//            printf("Blinking State\n");
-//           }  
+           if (Connection && Mode && (!State || LightSensorState) || (!Connection && AccelState)) {
+            CurrentState = Blinking; 
+            Serial.println("Blinking State");
+           }  
 
-           if ((Connection == false && AccelState == false) || (Connection == true && LightSensorState == false)) {
+           if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
             CurrentState = LEDOff;
-            printf("LED Off State\n");
+            Serial.println("LED Off State");
            }
       
           break;
           
       case LEDOff :       // If current state is state one
-//           if (Connection == true && Mode == true && (State == false || LightSensorState == true)) || (Connection == false && AccelState == true) {
-//            CurrentState = Blinking; 
-//            printf("Blinking State\n");
-//           }
+           if (Connection && Mode && (!State || LightSensorState) || (!Connection && AccelState)) {
+            CurrentState = Blinking; 
+            Serial.println("Blinking State");
+           }
 
-           if (Connection == true && Mode == false && (State == false || LightSensorState == true)){
+           if (Connection && !Mode && (!State || LightSensorState)){
             CurrentState = Solid;
-            printf("Solid State\n");
+            Serial.println("Solid State");
            }
           break;
   }                                   // end switch on Current State

@@ -145,61 +145,71 @@ bool CheckMode(void)
     if ( ThisEvent.EventParam == 'C'){
       //ES_PostList00( ThisEvent ); 
       NewEvent.EventType = ES_CONNECTED;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_CONNECTED EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }else if (ThisEvent.EventParam == 'N'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_DISCONNECTED;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_DISCONNECTED EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'B'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_BLINK;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_BLINK EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'S'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_SOLID;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_SOLID EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'O'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_ON;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_ON EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'A'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_AUTO;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_AUTO EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'D'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_DARK;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_DARK EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'L'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_BRIGHT;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_BRIGHT EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'M'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_MOVING;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_MOVING EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'P'){   // otherwise post to Service 0 for processing
       NewEvent.EventType = ES_NOTMOVING;
-      Serial.print("Incoming letter: ");
-      Serial.println((char)ThisEvent.EventParam);
+      Serial.println("ES_NOTMOVING EVENT");
+//      Serial.print("Incoming letter: ");
+//      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else {   // otherwise post to Service 0 for processing
