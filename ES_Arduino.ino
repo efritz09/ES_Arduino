@@ -98,8 +98,8 @@ void setup() {
   ble.setMode(BLUEFRUIT_MODE_DATA);
   Serial.println(F("******************************"));
 
-   DDRB  = 0xFF; // All PORTB pins are outputs (user LED)
-   PORTB &= ~(1<<7); // drive all pins low
+   //DDRB  = 0xFF; // All PORTB pins are outputs (user LED)
+   //PORTB &= ~(1<<7); // drive all pins low
    
 }
 
