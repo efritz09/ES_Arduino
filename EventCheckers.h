@@ -15,6 +15,7 @@
 #define EventCheckers_H
 
 // prototypes for event checkers
+#include "Bluetooth.h"
 
 #ifdef __cplusplus
 extern "C" {

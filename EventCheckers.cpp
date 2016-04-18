@@ -1,3 +1,5 @@
+
+
 /****************************************************************************
  Module
    EventCheckers.c
@@ -38,6 +40,9 @@
 // actual functionsdefinition
 #include "EventCheckers.h"
 #include <Arduino.h>
+#include <Adafruit_BLE.h>
+#include <Adafruit_BluefruitLE_SPI.h>
+#include <Adafruit_BluefruitLE_UART.h>
 
 // This is the event checking function sample. It is not intended to be 
 // included in the module. It is only here as a sample to guide you in writing
@@ -127,9 +132,37 @@ bool CheckSerial(void)
   }
   return false;
 }
+//
+//bool CheckBluetooth(void) {
+//  while ( ble.available() )
+//  {
+//    int c = ble.read();
+//
+//    Serial.print((char)c);
+//
+//    // Hex output too, helps w/debugging!
+//    Serial.print(" [0x");
+//    if (c <= 0xF) Serial.print(F("0"));
+//    Serial.print(c, HEX);
+//    Serial.print("] ");
+//  }
+//}
 
 bool CheckMode(void)
 {
+//  while ( ble.available() )
+//  {
+//    int c = ble.read();
+//
+//    Serial.print((char)c);
+//
+//    // Hex output too, helps w/debugging!
+//    Serial.print(" [0x");
+//    if (c <= 0xF) Serial.print(F("0"));
+//    Serial.print(c, HEX);
+//    Serial.print("] ");
+//  }
+  
   if ( Serial.available() > 0 ) // new key waiting?
   {
     ES_Event ThisEvent;

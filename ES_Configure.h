@@ -53,11 +53,11 @@
 // These are the definitions for Service 1
 #if NUM_SERVICES > 1
 // the header file with the public fuction prototypes
-#define SERV_1_HEADER "TestHarnessService1.h"
+#define SERV_1_HEADER "BluetoothSM.h"
 // the name of the Init function
-#define SERV_1_INIT InitTestHarnessService1
+#define SERV_1_INIT InitBluetoothSM
 // the name of the run function
-#define SERV_1_RUN RunTestHarnessService1
+#define SERV_1_RUN RunBluetoothSM
 // How big should this services Queue be?
 #define SERV_1_QUEUE_SIZE 3
 #endif
@@ -299,8 +299,8 @@ typedef enum {  ES_NO_EVENT = 0,
 
 /****************************************************************************/
 // This is the list of event checking functions 
-#define EVENT_CHECK_LIST CheckMode
-
+#define EVENT_CHECK_LIST CheckBluetooth
+//CheckMode, 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the
 // correspnding timer expires. All 16 must be defined. If you are not using

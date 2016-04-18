@@ -26,6 +26,7 @@
 #include "ES_Configure.h"
 #include "ES_Framework.h"
 #include "TemplateFSM.h"
+#include "Bluetooth.h"
 
 #include <Arduino.h>
 
@@ -77,6 +78,7 @@ bool InitTemplateFSM ( uint8_t Priority )
   CurrentState = Start;
   // post the initial transition event
   Serial.println("main code initialized");
+//  InitBluetooth();
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService( MyPriority, ThisEvent) == true)
   {
