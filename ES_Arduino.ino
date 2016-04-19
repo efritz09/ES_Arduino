@@ -15,6 +15,8 @@
 #include "BluefruitConfig.h"
 #include "Bluetooth.h"
 
+#include "TemplateFSM.h"
+
 #define FACTORYRESET_ENABLE         0
 #define MINIMUM_FIRMWARE_VERSION    "0.6.6"
 #define MODE_LED_BEHAVIOUR          "MODE"
@@ -55,8 +57,35 @@ void CheckBluetooth(void) {
     if (c <= 0xF) Serial.print(F("0"));
     Serial.print(c, HEX);
     Serial.print("] ");
+    
+    ES_Event thisEvent;
+    char cmd = (char)c;
+    switch (cmd) {
+      case 'B' : //mode: blink 
+        thisEvent.EventType = ES_BLINK;
+        Serial.println("sending B");
+        break;
+      case 'O' : //mode: on 
+        thisEvent.EventType = ES_ON;
+        Serial.println("sending O");
+        break;
+      case 'S' : //state: solid
+        thisEvent.EventType = ES_SOLID;
+        Serial.println("sending S");
+        break;
+      case 'A' : //state: auto
+        thisEvent.EventType = ES_AUTO;
+        Serial.println("sending A");
+        break;
+      default : 
+        thisEvent.EventType = ES_WRONG;
+        break;
+    }
+    PostTemplateFSM(thisEvent);
   }
 }
+//ES_CONNECTED, ES_DISCONNECTED, ES_BLINK, ES_SOLID, ES_ON, ES_AUTO,
+   //             ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG
 
 void setup() {
   // put your setup code here, to run once:
