@@ -132,21 +132,6 @@ bool CheckSerial(void)
   }
   return false;
 }
-//
-//bool CheckBluetooth(void) {
-//  while ( ble.available() )
-//  {
-//    int c = ble.read();
-//
-//    Serial.print((char)c);
-//
-//    // Hex output too, helps w/debugging!
-//    Serial.print(" [0x");
-//    if (c <= 0xF) Serial.print(F("0"));
-//    Serial.print(c, HEX);
-//    Serial.print("] ");
-//  }
-//}
 
 bool CheckMode(void)
 {

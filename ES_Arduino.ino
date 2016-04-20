@@ -26,6 +26,7 @@ SoftwareSerial bluefruitSS = SoftwareSerial(BLUEFRUIT_SWUART_TXD_PIN, BLUEFRUIT_
 Adafruit_BluefruitLE_UART ble(bluefruitSS, BLUEFRUIT_UART_MODE_PIN,
                       BLUEFRUIT_UART_CTS_PIN, BLUEFRUIT_UART_RTS_PIN);
 
+bool connection = false;
 
 // A small helper
 void error(const __FlashStringHelper*err) {
@@ -63,19 +64,29 @@ void CheckBluetooth(void) {
     switch (cmd) {
       case 'B' : //mode: blink 
         thisEvent.EventType = ES_BLINK;
-        Serial.println("sending B");
+        Serial.println("mode: blink");
         break;
       case 'O' : //mode: on 
         thisEvent.EventType = ES_ON;
-        Serial.println("sending O");
+        Serial.println("mode: on");
         break;
       case 'S' : //state: solid
         thisEvent.EventType = ES_SOLID;
-        Serial.println("sending S");
+        Serial.println("state: solid");
         break;
       case 'A' : //state: auto
         thisEvent.EventType = ES_AUTO;
-        Serial.println("sending A");
+        Serial.println("state: auto");
+        break;
+      case 'C' : //connected
+        connection = true;
+        thisEvent.EventType = ES_CONNECTED;
+        Serial.println("connected");
+        break;
+      case 'D' : //disconnected
+        connection = false;
+        thisEvent.EventType = ES_DISCONNECTED;
+        Serial.println("disconnected");
         break;
       default : 
         thisEvent.EventType = ES_WRONG;
@@ -84,6 +95,54 @@ void CheckBluetooth(void) {
     PostTemplateFSM(thisEvent);
   }
 }
+//bool CheckBluetoothConnection(void) {
+//  return false;
+//}
+bool CheckBluetoothConnection(void) {
+  ES_Event newEvent;
+  if(!connection) {
+    Serial.println("in btconnect");
+    if(ble.isConnected()) {
+      Serial.println("BLUETOOTH CONNECTED!!!");
+        if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
+        // Change Mode LED Activity
+        Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+        ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
+      }
+      ble.setMode(BLUEFRUIT_MODE_DATA);
+      newEvent.EventType = ES_CONNECTED;
+      connection = true;
+      PostTemplateFSM(newEvent);
+      return true;
+    }
+  }
+}
+
+//bool CheckBluetoothConnection (void) {
+//  static bool connection = false;
+//  ES_Event newEvent;
+//  bool isconnected = ble.isConnected();
+//  if(isconnected) {
+//    Serial.println("BLUETOOTH CONNECTED!!!");
+//    if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
+//    // Change Mode LED Activity
+//    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+//    ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
+//  }
+//    ble.setMode(BLUEFRUIT_MODE_DATA);
+//    newEvent.EventType = ES_CONNECTED;
+////    connection = true;
+//    PostTemplateFSM(newEvent);
+//    return true;
+////  }else if(!isconnected) {
+////    Serial.println("BLUETOOTH DISCONNECTED...");
+////    newEvent.EventType = ES_DISCONNECTED;
+////    connection = false;
+////    PostTemplateFSM(newEvent);
+////    return true;
+//  }
+//  return false;
+//}
 //ES_CONNECTED, ES_DISCONNECTED, ES_BLINK, ES_SOLID, ES_ON, ES_AUTO,
    //             ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG
 
@@ -114,18 +173,18 @@ void setup() {
   Serial.println();
   ble.verbose(false);  // debug info is a little annoying after this point!
   /* Wait for connection */
-  while (! ble.isConnected()) delay(500);
-  Serial.println(F("******************************"));
-  // LED Activity command is only supported from 0.6.6
-  if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
-    // Change Mode LED Activity
-    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
-    ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
-  }
-  // Set module to DATA mode
-  Serial.println( F("Switching to DATA mode!") );
-  ble.setMode(BLUEFRUIT_MODE_DATA);
-  Serial.println(F("******************************"));
+//  while (! ble.isConnected()) delay(500);
+//  Serial.println(F("******************************"));
+//  // LED Activity command is only supported from 0.6.6
+//  if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
+//    // Change Mode LED Activity
+//    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+//    ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
+//  }
+//  // Set module to DATA mode
+//  Serial.println( F("Switching to DATA mode!") );
+//  ble.setMode(BLUEFRUIT_MODE_DATA);
+//  Serial.println(F("******************************"));
 
    //DDRB  = 0xFF; // All PORTB pins are outputs (user LED)
    //PORTB &= ~(1<<7); // drive all pins low

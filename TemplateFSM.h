@@ -26,6 +26,10 @@ bool InitTemplateFSM ( uint8_t Priority );
 bool PostTemplateFSM( ES_Event ThisEvent );
 ES_Event RunTemplateFSM( ES_Event ThisEvent );
 TemplateState_t QueryTemplateSM ( void );
+
+bool CheckAccel(void);
+bool CheckLight(void);
+
 #ifdef __cplusplus
 }
 #endif

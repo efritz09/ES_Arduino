@@ -29,6 +29,12 @@
 #include "Bluetooth.h"
 
 #include <Arduino.h>
+#include <Wire.h>
+#include <math.h>
+#include <SparkFun_MMA8452Q.h>
+
+#define LIGHT_THRESH        600
+#define ACCEL_MOVING_THRESH 50
 
 /*----------------------------- Module Defines ----------------------------*/
 
@@ -49,6 +55,12 @@ static bool Mode = false;
 static bool State = false;
 static bool LightSensorState = false;
 static bool AccelState = false;
+
+MMA8452Q accel;
+int accel_vector;
+int lightPin = A7;
+int accelLED = 3;
+int lightLED = 5;
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
@@ -76,9 +88,14 @@ bool InitTemplateFSM ( uint8_t Priority )
   MyPriority = Priority;
   // put us into the Initial PseudoState
   CurrentState = Start;
-  // post the initial transition event
+  //initialize inputs and outputs
+  accel.init();
+  pinMode(accelLED, OUTPUT);
+  pinMode(lightLED, OUTPUT);
+  while(accel.available() == false)Serial.println("connecting...");
+ 
   Serial.println("main code initialized");
-//  InitBluetooth();
+  // post the initial transition event
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService( MyPriority, ThisEvent) == true)
   {
@@ -237,6 +254,48 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
 TemplateState_t QueryTemplateFSM ( void )
 {
    return(CurrentState);
+}
+
+
+bool CheckAccel(void) {
+  static bool moving = false;
+  ES_Event newEvent;
+  if(accel.available()) {
+    accel.read();
+    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
+    int shakeLevel = map(accel_vector,1100,4095,0,255);
+    if(shakeLevel > 255) shakeLevel = 255;
+    else if(shakeLevel < 0) shakeLevel = 0;
+    if(shakeLevel > ACCEL_MOVING_THRESH && moving == false) { //moving
+      newEvent.EventType = ES_MOVING;
+      PostTemplateFSM(newEvent);
+      moving = true;
+      return true;
+    } else if(shakeLevel <= ACCEL_MOVING_THRESH && moving == true) { //not moving
+      newEvent.EventType = ES_NOTMOVING;
+      PostTemplateFSM(newEvent);
+      moving = false;
+      return true;
+    }
+  }
+  return false;
+}
+bool CheckLight(void) {
+  static bool bright = true;
+  ES_Event newEvent;
+  unsigned light = analogRead(lightPin);
+  if(light > LIGHT_THRESH && bright == true) { //it is dark
+      newEvent.EventType = ES_DARK;
+      PostTemplateFSM(newEvent);
+      bright = false;
+      return true;
+  }else if(light <= LIGHT_THRESH && bright == false) { //it is light
+      newEvent.EventType = ES_BRIGHT;
+      PostTemplateFSM(newEvent);
+      bright = true;
+      return false;
+  }
+  return false;
 }
 
 /***************************************************************************

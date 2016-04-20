@@ -19,6 +19,7 @@ extern "C" {
 #endif
 
 void CheckBluetooth(void);
+bool CheckBluetoothConnection(void);
 
 
 #ifdef __cplusplus
