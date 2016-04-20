@@ -36,7 +36,7 @@
 
   #define LIGHT_THRESH        600
   #define ACCEL_MOVING_THRESH 50
-  #define BLINK_TIME  200
+  #define BLINK_TIME  50
 
   /*----------------------------- Module Defines ----------------------------*/
 
@@ -54,7 +54,7 @@
   static uint8_t MyPriority;
   static bool Connection = false;
   static bool Mode = false;
-  static bool State = false;
+  static bool State = true;
   static bool LightSensorState = false;
   static bool AccelState = false;
   static bool ledState = false;
@@ -157,14 +157,14 @@
   //  printf("incoming... ");
   if (NewEvent == ES_CONNECTED) Connection = true;
   else if (NewEvent == ES_DISCONNECTED) Connection = false;
-  else if (NewEvent == ES_BLINK) Mode = true; //Blink mode = 1
-  else if (NewEvent == ES_SOLID) Mode = false;
-  else if (NewEvent == ES_AUTO) State = true;
-  else if (NewEvent == ES_ON) State = false;
-  else if (NewEvent == ES_DARK) LightSensorState = true;
-  else if (NewEvent == ES_BRIGHT) LightSensorState = false;
-  else if (NewEvent == ES_MOVING) AccelState = true;
-  else if (NewEvent == ES_NOTMOVING) AccelState = false;
+  else if (NewEvent == ES_BLINK) Mode = true;                 //Blink mode = 1
+  else if (NewEvent == ES_SOLID) Mode = false;                //solid mode = 0
+  else if (NewEvent == ES_AUTO) State = true;                 //auto state = 1
+  else if (NewEvent == ES_ON) State = false;                  //on state   = 0
+  else if (NewEvent == ES_DARK) LightSensorState = true;      //dark state = 1
+  else if (NewEvent == ES_BRIGHT) LightSensorState = false;   //light state= 0
+  else if (NewEvent == ES_MOVING) AccelState = true;          //move state = 1
+  else if (NewEvent == ES_NOTMOVING) AccelState = false;      //not moving = 0
   Serial.print("Connection: ");
   Serial.print(Connection);
   Serial.print("\tMode: ");
@@ -195,13 +195,15 @@
         Serial.println("Solid State");
         //turn that shit on
         analogWrite(lightLED,255);
+        analogWrite(accelLED,255);
       }
     
-      if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
+      if ((!Connection && !AccelState) || (Connection && (!LightSensorState && State)))  {
         CurrentState = LEDOff;
         Serial.println("LEDOff state");
         //turn that shit off
         analogWrite(lightLED,0);
+        analogWrite(accelLED,0);
       }
     
       //do the actual shit
@@ -215,13 +217,15 @@
         Serial.println("Solid State");
         //turn that shit on
         analogWrite(lightLED,255);
+        analogWrite(accelLED,255);
       }
     
-      if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
+      if ((!Connection && !AccelState) || (Connection && (!LightSensorState && State)))  {
         CurrentState = LEDOff;
         Serial.println("LED Off State");
         //turn that shit off
         analogWrite(lightLED,0);
+        analogWrite(accelLED,0);
       }
       if(ThisEvent.EventType == ES_TIMEOUT && ThisEvent.EventParam == BlinkTimer) {
         ES_Timer_InitTimer(BlinkTimer,BLINK_TIME);
@@ -230,10 +234,12 @@
           Serial.println("blink off");
           ledState = false;
           analogWrite(lightLED,0);
+          analogWrite(accelLED,0);
         } else {
           Serial.println("blink on");
           ledState = true;
           analogWrite(lightLED,255);
+          analogWrite(accelLED,255);
         }
       }
       //do the actual shit
@@ -248,11 +254,12 @@
         ES_Timer_InitTimer(BlinkTimer,BLINK_TIME);
       }  
     
-      if ((!Connection && !AccelState) || (Connection && !LightSensorState)) {
+      if ((!Connection && !AccelState) || (Connection && (!LightSensorState && State)))  {
         CurrentState = LEDOff;
         Serial.println("LED Off State");
         //turn that shit off
         analogWrite(lightLED,0);
+        analogWrite(accelLED,0);
       }
     
       //do the actual shit
@@ -272,6 +279,7 @@
         Serial.println("Solid State");
         //turn that shit on
         analogWrite(lightLED,255);
+        analogWrite(accelLED,255);
       }
     
       //do the actual shit

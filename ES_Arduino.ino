@@ -34,8 +34,12 @@ void error(const __FlashStringHelper*err) {
   while (1);
 }
 
-
+/*
+ * CheckBluetooth
+ * Checks for an incomming message. Decodes the message and posts the appropriate event
+ */
 void CheckBluetooth(void) {
+  //checks for serial characters to send
   char n, inputs[BUFSIZE+1];
   if (Serial.available()) {
     n = Serial.readBytes(inputs, BUFSIZE);
@@ -46,19 +50,9 @@ void CheckBluetooth(void) {
     // Send input data to host via Bluefruit
     ble.print(inputs);
   }
-//  else Serial.println("not available");
-
-  // Echo received data]
-//  Serial.println(ble.available());
+  //checks for incomming messages
   while ( ble.available() ) {
-    int c = ble.read();
-    Serial.print((char)c);
-    // Hex output too, helps w/debugging!
-    Serial.print(" [0x");
-    if (c <= 0xF) Serial.print(F("0"));
-    Serial.print(c, HEX);
-    Serial.print("] ");
-    
+    int c = ble.read();    
     ES_Event thisEvent;
     char cmd = (char)c;
     switch (cmd) {
@@ -87,6 +81,7 @@ void CheckBluetooth(void) {
         connection = false;
         thisEvent.EventType = ES_DISCONNECTED;
         ble.disconnect();
+        ble.reset();
         Serial.println("disconnected");
         break;
       default : 
@@ -106,8 +101,8 @@ void CheckBluetooth(void) {
  */
 bool CheckBluetoothConnection(void) {
   ES_Event newEvent;
-  if(!connection) {
-    Serial.println("in btconnect");
+  if(!connection) { //keeps ble.isConnected from blocking the code when connected
+//    Serial.println("in btconnect");
     if(ble.isConnected()) {
       Serial.println("BLUETOOTH CONNECTED!!!");
         if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) ) {
@@ -121,6 +116,11 @@ bool CheckBluetoothConnection(void) {
       PostTemplateFSM(newEvent);
       return true;
     }
+    //may not need this...
+//    else {
+//      Serial.println("disconnecting");
+//      ble.disconnect();
+//    }
   }
 }
 /*
@@ -153,8 +153,6 @@ bool CheckBluetoothConnection(void) {
 //  }
 //  return false;
 //}
-//ES_CONNECTED, ES_DISCONNECTED, ES_BLINK, ES_SOLID, ES_ON, ES_AUTO,
-   //             ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG
 
 void setup() {
   // put your setup code here, to run once:
@@ -182,7 +180,7 @@ void setup() {
   Serial.println(F("Then Enter characters to send to Bluefruit"));
   Serial.println();
   ble.verbose(false);  // debug info is a little annoying after this point!
-  /* Wait for connection */
+  /* This has been moved to an event checker */
 //  while (! ble.isConnected()) delay(500);
 //  Serial.println(F("******************************"));
 //  // LED Activity command is only supported from 0.6.6
@@ -194,20 +192,12 @@ void setup() {
 //  // Set module to DATA mode
 //  Serial.println( F("Switching to DATA mode!") );
 //  ble.setMode(BLUEFRUIT_MODE_DATA);
-//  Serial.println(F("******************************"));
-
-   //DDRB  = 0xFF; // All PORTB pins are outputs (user LED)
-   //PORTB &= ~(1<<7); // drive all pins low
-   
+//  Serial.println(F("******************************"));   
 }
 
 void loop() {
   
   ES_Return_t ErrorType = ES_Initialize(ES_Timer_RATE_1MS);
-  // put your main code here, to run repeatedly:
-  // Check for user input
-  
-  
   if ( ErrorType == Success ) {
     ErrorType = ES_Run();
   }
@@ -226,7 +216,6 @@ void loop() {
       Serial.println("Other Failure");
       break;
 }
-
 
 for(;;)
   ;
