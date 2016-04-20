@@ -39,6 +39,10 @@ typedef enum { ES_Timer_ERR           = -1,
                ES_Timer_NOT_ACTIVE    =  0
 } ES_TimerReturn_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void             ES_Timer_Init(TimerRate_t Rate);
 void             ES_Timer_Tick_Resp(void);
 ES_TimerReturn_t ES_Timer_InitTimer(uint8_t Num, uint16_t NewTime);
@@ -47,6 +51,10 @@ ES_TimerReturn_t ES_Timer_StartTimer(uint8_t Num);
 ES_TimerReturn_t ES_Timer_StopTimer(uint8_t Num);
 ES_TimerReturn_t ES_Timer_IsTimerActive(uint8_t Num);
 uint16_t         ES_Timer_GetTime(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif   /* ES_Timers_H */
 /*------------------------------ End of file ------------------------------*/

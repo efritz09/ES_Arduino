@@ -259,7 +259,9 @@ typedef enum {  ES_NO_EVENT = 0,
                 
                 EV_SERIAL_RECEIVE,
                 ES_CONNECTED, ES_DISCONNECTED, ES_BLINK, ES_SOLID, ES_ON, ES_AUTO,
-                ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG
+                ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG, 
+
+                ES_ENTRY
               
                 } ES_EventTyp_t ;
 
@@ -308,7 +310,7 @@ typedef enum {  ES_NO_EVENT = 0,
 // Unlike services, any combination of timers may be used and there is no
 // priority in servicing them
 #define TIMER_UNUSED ((pPostFunc)0)
-#define TIMER0_RESP_FUNC TIMER_UNUSED
+#define TIMER0_RESP_FUNC PostTemplateFSM
 #define TIMER1_RESP_FUNC TIMER_UNUSED
 #define TIMER2_RESP_FUNC TIMER_UNUSED
 #define TIMER3_RESP_FUNC TIMER_UNUSED
@@ -332,7 +334,7 @@ typedef enum {  ES_NO_EVENT = 0,
 // the timer number matches where the timer event will be routed
 // These symbolic names should be changed to be relevant to your application 
 
-#define TEST_TIMER 0
+#define BlinkTimer 0
 #define SERVICE1_TIMER 1
 #define SERVICE2_TIMER 2
 #define SERVICE3_TIMER 3

@@ -133,21 +133,12 @@ bool CheckSerial(void)
   return false;
 }
 
+/*
+ * CheckMode
+ * Keystroke-ish event checker for debugging the state machine
+ */
 bool CheckMode(void)
-{
-//  while ( ble.available() )
-//  {
-//    int c = ble.read();
-//
-//    Serial.print((char)c);
-//
-//    // Hex output too, helps w/debugging!
-//    Serial.print(" [0x");
-//    if (c <= 0xF) Serial.print(F("0"));
-//    Serial.print(c, HEX);
-//    Serial.print("] ");
-//  }
-  
+{  
   if ( Serial.available() > 0 ) // new key waiting?
   {
     ES_Event ThisEvent;

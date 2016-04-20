@@ -86,6 +86,7 @@ void CheckBluetooth(void) {
       case 'D' : //disconnected
         connection = false;
         thisEvent.EventType = ES_DISCONNECTED;
+        ble.disconnect();
         Serial.println("disconnected");
         break;
       default : 
@@ -98,6 +99,11 @@ void CheckBluetooth(void) {
 //bool CheckBluetoothConnection(void) {
 //  return false;
 //}
+
+/*
+ * CheckBluetoothConnection
+ * This is sort of a hack to keep ble.isConnected() from bricking the code. 
+ */
 bool CheckBluetoothConnection(void) {
   ES_Event newEvent;
   if(!connection) {
@@ -117,7 +123,11 @@ bool CheckBluetoothConnection(void) {
     }
   }
 }
-
+/*
+ * CheckBluetoothConnection
+ * An older version that I thought should work but it appears that 
+ * ble.isConnected has serious blocking code
+ */
 //bool CheckBluetoothConnection (void) {
 //  static bool connection = false;
 //  ES_Event newEvent;

@@ -79,7 +79,7 @@ bool InitBluetooth ( uint8_t Priority )
    *******************************************/
   // post the initial transition event
   ThisEvent.EventType = ES_INIT;
-	ES_Timer_InitTimer(TEST_TIMER, FIVE_SEC);
+	ES_Timer_InitTimer(SERVICE0_TIMER, FIVE_SEC);
 	i=0;
   if (ES_PostToService( MyPriority, ThisEvent) == true)
   {
@@ -142,7 +142,7 @@ ES_Event RunBluetooth( ES_Event ThisEvent )
     break;
 
     case ES_TIMEOUT :  // re-start timer & announce
-      ES_Timer_InitTimer(TEST_TIMER, ONE_SEC);
+      ES_Timer_InitTimer(SERVICE0_TIMER, ONE_SEC);
       //printf("ES_TIMEOUT received from Timer %d in Service %d\r\n",
       //        ThisEvent.EventParam, MyPriority);
 			i++;
