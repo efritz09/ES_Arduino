@@ -35,7 +35,7 @@
   #include <SparkFun_MMA8452Q.h>
 
   #define LIGHT_THRESH        600
-  #define ACCEL_MOVING_THRESH 50
+  #define ACCEL_MOVING_THRESH 10
   #define BLINK_TIME  50
 
   /*----------------------------- Module Defines ----------------------------*/
