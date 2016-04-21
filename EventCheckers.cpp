@@ -153,76 +153,76 @@ bool CheckMode(void)
     // a distribution list.
     if ( ThisEvent.EventParam == 'C'){
       //ES_PostList00( ThisEvent ); 
-      NewEvent.EventType = ES_CONNECTED;
-      Serial.println("ES_CONNECTED EVENT");
+      NewEvent.EventType = Connected;
+      Serial.println("Connected EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }else if (ThisEvent.EventParam == 'N'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_DISCONNECTED;
-      Serial.println("ES_DISCONNECTED EVENT");
+      NewEvent.EventType = Disconnected;
+      Serial.println("Disconnected EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'B'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_BLINK;
-      Serial.println("ES_BLINK EVENT");
+      NewEvent.EventType = Blink;
+      Serial.println("Blink EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'S'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_SOLID;
-      Serial.println("ES_SOLID EVENT");
+      NewEvent.EventType = Solid;
+      Serial.println("Solid EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'O'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_ON;
-      Serial.println("ES_ON EVENT");
+      NewEvent.EventType = On;
+      Serial.println("On EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'A'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_AUTO;
-      Serial.println("ES_AUTO EVENT");
+      NewEvent.EventType = Auto;
+      Serial.println("Auto EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'D'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_DARK;
-      Serial.println("ES_DARK EVENT");
+      NewEvent.EventType = Dark;
+      Serial.println("Dark EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'L'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_BRIGHT;
-      Serial.println("ES_BRIGHT EVENT");
+      NewEvent.EventType = Bright;
+      Serial.println("Bright EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'M'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_MOVING;
-      Serial.println("ES_MOVING EVENT");
+      NewEvent.EventType = Moving;
+      Serial.println("Moving EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else if (ThisEvent.EventParam == 'P'){   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_NOTMOVING;
-      Serial.println("ES_NOTMOVING EVENT");
+      NewEvent.EventType = NotMoving;
+      Serial.println("NotMoving EVENT");
 //      Serial.print("Incoming letter: ");
 //      Serial.println((char)ThisEvent.EventParam);
       PostTemplateFSM(NewEvent);
     }
     else {   // otherwise post to Service 0 for processing
-      NewEvent.EventType = ES_WRONG;
+      NewEvent.EventType = Error;
       Serial.print("Wrong shit, bitch, no use for '");
       Serial.print((char)ThisEvent.EventParam);
       Serial.println("'");

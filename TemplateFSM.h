@@ -14,8 +14,12 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { Start, Blinking, Solid, 
-               LEDOff } TemplateState_t ;
+typedef enum {
+  StartState, 
+  BlinkingState, 
+  SolidState, 
+  LEDOffState 
+} TemplateState_t ;
 
 
 // Public Function Prototypes

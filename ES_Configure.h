@@ -256,13 +256,21 @@ typedef enum {  ES_NO_EVENT = 0,
                 ES_NEW_KEY, /* signals a new key received from terminal */
                 ES_LOCK,
                 ES_UNLOCK,
-                
-                EV_SERIAL_RECEIVE,
-                ES_CONNECTED, ES_DISCONNECTED, ES_BLINK, ES_SOLID, ES_ON, ES_AUTO,
-                ES_DARK, ES_BRIGHT, ES_MOVING, ES_NOTMOVING, ES_WRONG, 
-
-                ES_ENTRY
               
+                EV_SERIAL_RECEIVE,
+                
+                Connected, 
+                Disconnected, 
+                Blink, 
+                Solid, 
+                On, 
+                Auto,
+                Dark, 
+                Bright, 
+                Moving, 
+                NotMoving, 
+                Error
+
                 } ES_EventTyp_t ;
 
 /****************************************************************************/
