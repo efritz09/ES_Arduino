@@ -165,6 +165,7 @@
   else if (NewEvent == ES_BRIGHT) LightSensorState = false;   //light state= 0
   else if (NewEvent == ES_MOVING) AccelState = true;          //move state = 1
   else if (NewEvent == ES_NOTMOVING) AccelState = false;      //not moving = 0
+  else if (NewEvent == 
   Serial.print("Connection: ");
   Serial.print(Connection);
   Serial.print("\tMode: ");
