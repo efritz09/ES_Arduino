@@ -155,6 +155,7 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
   ES_EventTyp_t NewEvent;
   NewEvent = ThisEvent.EventType;
   //  printf("incoming... ");
+<<<<<<< HEAD
   if (NewEvent == Connected) connection = true;
   else if (NewEvent == Disconnected) connection = false;
   else if (NewEvent == Blink) LEDmode = true;
@@ -165,6 +166,19 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
   else if (NewEvent == Bright) night = false;
   else if (NewEvent == Moving) moving = true;
   else if (NewEvent == NotMoving) moving = false;
+=======
+  if (NewEvent == ES_CONNECTED) Connection = true;
+  else if (NewEvent == ES_DISCONNECTED) Connection = false;
+  else if (NewEvent == ES_BLINK) Mode = true;                 //Blink mode = 1
+  else if (NewEvent == ES_SOLID) Mode = false;                //solid mode = 0
+  else if (NewEvent == ES_AUTO) State = true;                 //auto state = 1
+  else if (NewEvent == ES_ON) State = false;                  //on state   = 0
+  else if (NewEvent == ES_DARK) LightSensorState = true;      //dark state = 1
+  else if (NewEvent == ES_BRIGHT) LightSensorState = false;   //light state= 0
+  else if (NewEvent == ES_MOVING) AccelState = true;          //move state = 1
+  else if (NewEvent == ES_NOTMOVING) AccelState = false;      //not moving = 0
+  else if (NewEvent == 
+>>>>>>> origin/master
   Serial.print("Connection: ");
   Serial.print(connection);
   Serial.print("\tLED Mode: ");
@@ -297,6 +311,34 @@ TemplateState_t QueryTemplateFSM ( void )
   return(CurrentState);
 }
 
+bool CheckAccelerometer(void) {
+  static unsigned pastVals[10] = {0,0,0,0,0,0,0,0,0,0};
+  static index = 0;
+  static bool moving = false;
+  ES_Event newEvent;
+  if(accel.available()) {
+    accel.read();
+    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
+    pastVals(index) = accel_vector;
+    unsigned avg = 0;
+    for(unsigned i = 0; i < 10; i++) {
+      avg += pastVals(i);
+    }
+    avg /= 10;
+    if(avg > ACCEL_MOVING_THRESHOLD && moving == false) {
+      newEvent.EventType = ES_MOVING;
+      PostTemplateFSM(newEvent);
+      moving = true;
+    }else if(avg <= ACCEL_MOVING_THRESHOLD && moving == true) {
+      newEvent.EventType = ES_NOTMOVING;
+      PostTemplateFSM(newEvent);
+      moving = false;
+    }
+    index++;
+    if(index >= 10) index-=10;
+  }
+  return false;
+}
 
 bool CheckAccel(void) {
   static bool isMoving = false;
@@ -321,6 +363,7 @@ bool CheckAccel(void) {
   }
   return false;
 }
+
 bool CheckLight(void) {
   static bool bright = true;
   ES_Event newEvent;

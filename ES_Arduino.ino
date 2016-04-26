@@ -35,6 +35,7 @@ void error(const __FlashStringHelper*err) {
 }
 
 /*
+<<<<<<< HEAD
  * CheckBluetoothConnection
  * This is sort of a hack to keep ble.isConnected() from bricking the code. 
  */
@@ -56,6 +57,13 @@ bool CheckBluetoothConnection(void) {
 }
 
 
+=======
+ * WriteBluetooth
+ */
+void WriteBluetooth(char c) {
+  ble.print(c);
+}
+>>>>>>> origin/master
 /*
  * CheckBluetooth
  * Checks for an incomming message. Decodes the message and posts the appropriate event
