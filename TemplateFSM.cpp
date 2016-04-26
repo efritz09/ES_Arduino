@@ -311,6 +311,34 @@
     return(CurrentState);
   }
 
+bool CheckAccelerometer(void) {
+  static unsigned pastVals[10] = {0,0,0,0,0,0,0,0,0,0};
+  static index = 0;
+  static bool moving = false;
+  ES_Event newEvent;
+  if(accel.available()) {
+    accel.read();
+    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
+    pastVals(index) = accel_vector;
+    unsigned avg = 0;
+    for(unsigned i = 0; i < 10; i++) {
+      avg += pastVals(i);
+    }
+    avg /= 10;
+    if(avg > ACCEL_MOVING_THRESHOLD && moving == false) {
+      newEvent.EventType = ES_MOVING;
+      PostTemplateFSM(newEvent);
+      moving = true;
+    }else if(avg <= ACCEL_MOVING_THRESHOLD && moving == true) {
+      newEvent.EventType = ES_NOTMOVING;
+      PostTemplateFSM(newEvent);
+      moving = false;
+    }
+    index++;
+    if(index >= 10) index-=10;
+  }
+  return false;
+}
 
   bool CheckAccel(void) {
     static bool moving = false;
@@ -335,6 +363,7 @@
 }
 return false;
 }
+
 bool CheckLight(void) {
   static bool bright = true;
   ES_Event newEvent;

@@ -35,6 +35,12 @@ void error(const __FlashStringHelper*err) {
 }
 
 /*
+ * WriteBluetooth
+ */
+void WriteBluetooth(char c) {
+  ble.print(c);
+}
+/*
  * CheckBluetooth
  * Checks for an incomming message. Decodes the message and posts the appropriate event
  */
