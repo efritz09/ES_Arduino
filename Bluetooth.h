@@ -11,7 +11,7 @@ extern "C" {
 
 void CheckBluetooth(void);
 bool CheckBluetoothConnection(void);
-void WriteBluetooth(void);
+void WriteBluetooth(char c);
 
 #ifdef __cplusplus
 }

@@ -37,13 +37,17 @@ next lower level in the hierarchy that are sub-machines to this machine
 #include <SparkFun_MMA8452Q.h>
 
 /*----------------------------- Module Defines ----------------------------*/
-#define LIGHT_THRESH        600
-#define ACCEL_MOVING_THRESH 10
-#define BLINK_TIME  200
+#define LIGHT_THRESH            600
+//#define ACCEL_MOVING_THRESH 10
+#define ACCEL_MOVING_THRESHOLD  200 //1050 //without gravity offset
+#define BLINK_TIME        200
+#define ACCEL_TIME        100
+#define UPDATE_PHONE_TIME 1000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.They should be functions
 relevant to the behavior of this state machine
 */
+bool CheckAccelerometer(void);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well.
@@ -96,6 +100,8 @@ bool InitTemplateFSM ( uint8_t Priority )
   pinMode(accelLED, OUTPUT);
   pinMode(lightLED, OUTPUT);
   while(accel.available() == false)Serial.println("connecting...");
+  ES_Timer_InitTimer(AccelTimer,ACCEL_TIME);
+  ES_Timer_InitTimer(UpdatePhoneTimer,UPDATE_PHONE_TIME);
 
   Serial.println("main code initialized");
 // post the initial transition event
@@ -155,7 +161,6 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
   ES_EventTyp_t NewEvent;
   NewEvent = ThisEvent.EventType;
   //  printf("incoming... ");
-<<<<<<< HEAD
   if (NewEvent == Connected) connection = true;
   else if (NewEvent == Disconnected) connection = false;
   else if (NewEvent == Blink) LEDmode = true;
@@ -166,31 +171,35 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
   else if (NewEvent == Bright) night = false;
   else if (NewEvent == Moving) moving = true;
   else if (NewEvent == NotMoving) moving = false;
-=======
-  if (NewEvent == ES_CONNECTED) Connection = true;
-  else if (NewEvent == ES_DISCONNECTED) Connection = false;
-  else if (NewEvent == ES_BLINK) Mode = true;                 //Blink mode = 1
-  else if (NewEvent == ES_SOLID) Mode = false;                //solid mode = 0
-  else if (NewEvent == ES_AUTO) State = true;                 //auto state = 1
-  else if (NewEvent == ES_ON) State = false;                  //on state   = 0
-  else if (NewEvent == ES_DARK) LightSensorState = true;      //dark state = 1
-  else if (NewEvent == ES_BRIGHT) LightSensorState = false;   //light state= 0
-  else if (NewEvent == ES_MOVING) AccelState = true;          //move state = 1
-  else if (NewEvent == ES_NOTMOVING) AccelState = false;      //not moving = 0
-  else if (NewEvent == 
->>>>>>> origin/master
-  Serial.print("Connection: ");
-  Serial.print(connection);
-  Serial.print("\tLED Mode: ");
-  Serial.print(LEDmode);
-  Serial.print("\tLED State: ");
-  Serial.print(LEDstate);
-  Serial.print("\tLight Sensor: ");
-  Serial.print(night);
-  Serial.print("\tAccelerometer: ");
-  Serial.println(moving);
-  Serial.print("current state: ");
-  Serial.println(CurrentState);
+  if(ThisEvent.EventType != ES_TIMEOUT) { //doesn't spam the output
+    Serial.print("Connection: ");
+    Serial.print(connection);
+    Serial.print("\tLED Mode: ");
+    Serial.print(LEDmode);
+    Serial.print("\tLED State: ");
+    Serial.print(LEDstate);
+    Serial.print("\tLight Sensor: ");
+    Serial.print(night);
+    Serial.print("\tAccelerometer: ");
+    Serial.println(moving);
+    Serial.print("current state: ");
+    Serial.println(CurrentState);
+  }
+  
+  if(ThisEvent.EventType == ES_TIMEOUT) {
+    if(ThisEvent.EventParam == AccelTimer) {
+      //check the accelerometer
+      CheckAccelerometer();
+      ES_Timer_InitTimer(AccelTimer,ACCEL_TIME);
+    }else if(ThisEvent.EventParam == UpdatePhoneTimer) {
+      //update phone
+      if(moving) WriteBluetooth('M');
+      else WriteBluetooth('N');
+      Serial.print("updating phone -> ");
+      Serial.println(moving);
+      ES_Timer_InitTimer(UpdatePhoneTimer,UPDATE_PHONE_TIME);
+    }
+  }
   //  else if (NewEvent == Error) printf("Something is wrong\n");
   switch ( CurrentState )
   {
@@ -311,58 +320,58 @@ TemplateState_t QueryTemplateFSM ( void )
   return(CurrentState);
 }
 
+/*
+ * CheckAccelerometer 
+ */
 bool CheckAccelerometer(void) {
-  static unsigned pastVals[10] = {0,0,0,0,0,0,0,0,0,0};
-  static index = 0;
-  static bool moving = false;
+  static bool isMoving = false;
+  static const unsigned alpha = 10;
+  static unsigned pastVal = 0;
+  
   ES_Event newEvent;
-  if(accel.available()) {
-    accel.read();
-    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
-    pastVals(index) = accel_vector;
-    unsigned avg = 0;
-    for(unsigned i = 0; i < 10; i++) {
-      avg += pastVals(i);
-    }
-    avg /= 10;
-    if(avg > ACCEL_MOVING_THRESHOLD && moving == false) {
-      newEvent.EventType = ES_MOVING;
-      PostTemplateFSM(newEvent);
-      moving = true;
-    }else if(avg <= ACCEL_MOVING_THRESHOLD && moving == true) {
-      newEvent.EventType = ES_NOTMOVING;
-      PostTemplateFSM(newEvent);
-      moving = false;
-    }
-    index++;
-    if(index >= 10) index-=10;
+  while(accel.available() == false)Serial.println("connecting...");
+  accel.read();
+  //there's got to be a better way to factor out gravity, but for now, static offset of 1000^2
+  accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2) - 1000000 );
+  //some equation i found online for a low pass filter
+  pastVal = (accel_vector + pastVal*alpha)/(alpha+1);
+  Serial.println(pastVal);
+
+  if(pastVal > ACCEL_MOVING_THRESHOLD && isMoving == false) {
+    newEvent.EventType = Moving;
+    PostTemplateFSM(newEvent);
+    isMoving = true;
+  }else if(pastVal <= ACCEL_MOVING_THRESHOLD && isMoving == true) {
+    newEvent.EventType = NotMoving;
+    PostTemplateFSM(newEvent);
+    isMoving = false;
   }
   return false;
 }
 
-bool CheckAccel(void) {
-  static bool isMoving = false;
-  ES_Event newEvent;
-  if(accel.available()) {
-    accel.read();
-    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
-    int shakeLevel = map(accel_vector,1100,4095,0,255);
-    if(shakeLevel > 255) shakeLevel = 255;
-    else if(shakeLevel < 0) shakeLevel = 0;
-    if(shakeLevel > ACCEL_MOVING_THRESH && isMoving == false) { //moving
-      newEvent.EventType = Moving;
-      PostTemplateFSM(newEvent);
-      isMoving = true;
-      return true;
-    } else if(shakeLevel <= ACCEL_MOVING_THRESH && isMoving == true) { //not moving
-      newEvent.EventType = NotMoving;
-      PostTemplateFSM(newEvent);
-      isMoving = false;
-      return true;
-    }
-  }
-  return false;
-}
+//bool CheckAccel(void) {
+//  static bool isMoving = false;
+//  ES_Event newEvent;
+//  if(accel.available()) {
+//    accel.read();
+//    accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2));
+//    int shakeLevel = map(accel_vector,1100,4095,0,255);
+//    if(shakeLevel > 255) shakeLevel = 255;
+//    else if(shakeLevel < 0) shakeLevel = 0;
+//    if(shakeLevel > ACCEL_MOVING_THRESH && isMoving == false) { //moving
+//      newEvent.EventType = Moving;
+//      PostTemplateFSM(newEvent);
+//      isMoving = true;
+//      return true;
+//    } else if(shakeLevel <= ACCEL_MOVING_THRESH && isMoving == true) { //not moving
+//      newEvent.EventType = NotMoving;
+//      PostTemplateFSM(newEvent);
+//      isMoving = false;
+//      return true;
+//    }
+//  }
+//  return false;
+//}
 
 bool CheckLight(void) {
   static bool bright = true;

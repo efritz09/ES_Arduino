@@ -319,8 +319,8 @@ typedef enum {  ES_NO_EVENT = 0,
 // priority in servicing them
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostTemplateFSM
-#define TIMER1_RESP_FUNC TIMER_UNUSED
-#define TIMER2_RESP_FUNC TIMER_UNUSED
+#define TIMER1_RESP_FUNC PostTemplateFSM
+#define TIMER2_RESP_FUNC PostTemplateFSM
 #define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
@@ -343,8 +343,8 @@ typedef enum {  ES_NO_EVENT = 0,
 // These symbolic names should be changed to be relevant to your application 
 
 #define BlinkTimer 0
-#define SERVICE1_TIMER 1
-#define SERVICE2_TIMER 2
+#define AccelTimer 1
+#define UpdatePhoneTimer 2
 #define SERVICE3_TIMER 3
 #define SERVICE4_TIMER 4
 #define SERVICE5_TIMER 5
