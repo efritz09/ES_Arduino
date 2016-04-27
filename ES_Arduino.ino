@@ -58,6 +58,7 @@ bool CheckBluetoothConnection(void) {
 
 /*
  * WriteBluetooth
+ * writes the character through bluetooth
  */
 void WriteBluetooth(char c) {
   ble.print(c);

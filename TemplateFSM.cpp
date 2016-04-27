@@ -41,7 +41,7 @@ next lower level in the hierarchy that are sub-machines to this machine
 //#define ACCEL_MOVING_THRESH 10
 #define ACCEL_MOVING_THRESHOLD  200 //1050 //without gravity offset
 #define BLINK_TIME        200
-#define ACCEL_TIME        100
+#define ACCEL_TIME        200
 #define UPDATE_PHONE_TIME 1000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.They should be functions
@@ -158,19 +158,20 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
 {
   ES_Event ReturnEvent;
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
-  ES_EventTyp_t NewEvent;
-  NewEvent = ThisEvent.EventType;
   //  printf("incoming... ");
-  if (NewEvent == Connected) connection = true;
-  else if (NewEvent == Disconnected) connection = false;
-  else if (NewEvent == Blink) LEDmode = true;
-  else if (NewEvent == Solid) LEDmode = false;
-  else if (NewEvent == Auto) LEDstate = true;
-  else if (NewEvent == On) LEDstate = false;
-  else if (NewEvent == Dark) night = true;
-  else if (NewEvent == Bright) night = false;
-  else if (NewEvent == Moving) moving = true;
-  else if (NewEvent == NotMoving) moving = false;
+  if (ThisEvent.EventType == Connected) {
+    connection = true;
+    ES_Timer_InitTimer(UpdatePhoneTimer,UPDATE_PHONE_TIME);
+  }
+  else if (ThisEvent.EventType == Disconnected) connection = false;
+  else if (ThisEvent.EventType == Blink) LEDmode = true;
+  else if (ThisEvent.EventType == Solid) LEDmode = false;
+  else if (ThisEvent.EventType == Auto) LEDstate = true;
+  else if (ThisEvent.EventType == On) LEDstate = false;
+  else if (ThisEvent.EventType == Dark) night = true;
+  else if (ThisEvent.EventType == Bright) night = false;
+  else if (ThisEvent.EventType == Moving) moving = true;
+  else if (ThisEvent.EventType == NotMoving) moving = false;
   if(ThisEvent.EventType != ES_TIMEOUT) { //doesn't spam the output
     Serial.print("Connection: ");
     Serial.print(connection);
@@ -191,7 +192,7 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
       //check the accelerometer
       CheckAccelerometer();
       ES_Timer_InitTimer(AccelTimer,ACCEL_TIME);
-    }else if(ThisEvent.EventParam == UpdatePhoneTimer) {
+    }else if(ThisEvent.EventParam == UpdatePhoneTimer && connection == true) {
       //update phone
       if(moving) WriteBluetooth('M');
       else WriteBluetooth('N');
@@ -200,7 +201,7 @@ ES_Event RunTemplateFSM( ES_Event ThisEvent )
       ES_Timer_InitTimer(UpdatePhoneTimer,UPDATE_PHONE_TIME);
     }
   }
-  //  else if (NewEvent == Error) printf("Something is wrong\n");
+  
   switch ( CurrentState )
   {
     case StartState :       // If current state is initial Psedudo State
@@ -335,7 +336,7 @@ bool CheckAccelerometer(void) {
   accel_vector = sqrt(pow(accel.x,2) + pow(accel.y,2) + pow(accel.z,2) - 1000000 );
   //some equation i found online for a low pass filter
   pastVal = (accel_vector + pastVal*alpha)/(alpha+1);
-  Serial.println(pastVal);
+//  Serial.println(pastVal);
 
   if(pastVal > ACCEL_MOVING_THRESHOLD && isMoving == false) {
     newEvent.EventType = Moving;
